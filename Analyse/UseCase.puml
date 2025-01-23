@@ -1,0 +1,34 @@
+@startuml
+left to right direction
+actor "Utilisateur" as User
+actor "Administrateur" as Admin
+
+package "Pkg_public" {
+  Usecase "Consulter le produit" as UCP1
+  Usecase "Ajouter au panier" as UCP2
+  Usecase "Passer une commande" as UCP3
+  Usecase "Payer la commande" as UCP4
+  Usecase "Consulter les détails de la commande" as UCP5
+}
+package "Pkg_Admin" {
+  Usecase "Ajouter un produit" as UCA1 #SkyBlue
+  Usecase "Modifier un produit" as UCA2 
+  Usecase "Supprimer un produit" as UCA3 #SkyBlue
+  Usecase "Gérer les commandes" as UCA4 
+  Usecase "Gérer les utilisateurs" as UCA5
+}
+
+Admin -- UCA1
+Admin -- UCA2
+Admin -- UCA3
+Admin -- UCA4
+Admin -- UCA5
+
+User -- UCP1
+User -- UCP2
+User -- UCP3
+User -- UCP4
+User -- UCP5
+
+
+@enduml
