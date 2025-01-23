@@ -1,0 +1,22 @@
+@startuml
+class Utilisateur {
+    - id: int         
+    - nom: string     
+    - email: string  
+    - adresse: string
+}
+
+class Role{
+    - id : int
+    - nom : string
+}
+class Produit {
+    - id: int         
+    - nom: string     
+    - prix: float  
+    - stock: int
+}
+
+Utilisateur "1" -- "0..*" Produit: "Gérer" 
+Utilisateur "1" -- "0..*" Role
+@enduml
