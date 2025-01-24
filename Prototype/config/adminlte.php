@@ -323,7 +323,7 @@ return [
         ['header' => 'PRODUITS'],
         [
             'text' => 'Produits',
-            'url' => 'admin/settings',
+            'route' => 'dashboard.product',
             'icon' => 'fas fa-fw fa-box',
         ],
 

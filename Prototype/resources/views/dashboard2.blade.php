@@ -5,14 +5,11 @@
 @section('content_header')
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h1>Dashboard</h1>
-        <x-adminlte-button label="Ajouter un produit" theme="primary" icon="fas fa-plus"/>
+        <x-adminlte-button data-bs-toggle="modal" data-bs-target="#exampleModal" label="Ajouter un produit" theme="primary" icon="fas fa-plus"/>
     </div>
 @stop
 
 @section('content')
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Launch demo modal
-  </button>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -23,6 +20,9 @@
         <div class="modal-body">
             <form action="" method="POST">
                 @csrf <!-- Laravel CSRF token -->
+                <div id="Errors">
+                    
+                </div>
                 <div class="form-group">
                     <label for="nom">Nom du Produit :</label>
                     <input type="text" name="nom" id="nom" class="form-control" placeholder="Entrez le nom du produit" required>
@@ -48,16 +48,7 @@
       </div>
     </div>
   </div>
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Ajouter un Produit</h3>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
 
-        </div>
-        <!-- /.card-body -->
-    </div>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Liste des Produits</h3>
@@ -74,12 +65,13 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="products_rows">
+                    @foreach($products as $product)
                     <tr>
-                        <td>1</td>
-                        <td>Produit A</td>
-                        <td>25.00 MAD</td>
-                        <td>50</td>
+                        <td>{{ $product->id }}</td>
+                        <td>{{ $product->name }}</td>
+                        <td>{{ $product->price }}</td>
+                        <td>{{ $product->stock }}</td>
                         <td>
                             <a href="#" class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i>
@@ -87,28 +79,12 @@
                             <a href="#" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#" class="btn btn-danger btn-sm">
+                            <a href="#" class="btn btn-danger btn-sm delete_product" data-id="{{ $product->id }}">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Produit B</td>
-                        <td>50.00 MAD</td>
-                        <td>30</td>
-                        <td>
-                            <a href="#" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="#" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="#" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -128,7 +104,32 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <script>
+        
+        $(document).ready(function() {
+            $(document).on('click', '.delete_product', function(e) {
+                e.preventDefault();
+                let product_id = $(this).data('id');
+                if(confirm("are you sure??"))
+                {
+                    $.ajax({
+                        url:"{{ route('produit.destroy', '') }}/" + product_id,
+                        method:'DELETE',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            product_id: product_id 
+                            },
+                        success: function(response) {
+                            alert('Product deleted successfully');
+                            $('#product-' + product_id).closest('tr').remove();
+                        },
+                        error: function(xhr, status, error) {
+                            alert('An error occurred: ' + error);
+                        }
+                    }) 
+                }
+            })
 
+        });
         $(document).ready(function() {
             $(document).on('click', '#add_product', function(e) {
                 e.preventDefault();
@@ -146,16 +147,50 @@
                         stock: stock,
                         content: content
                         },
-                    success:function(res){
-
+                    success:function(response){
+                        console.log(response)
+                        let productId = response.product.id
+                        let newname = response.product.name
+                        let newprice = response.product.price
+                        let nemstock = response.product.stock
+                        $('#products_rows').append(`
+                            <tr>
+                                <td>${productId}</td>
+                                <td> ${newname} </td>
+                                <td> ${newprice} </td>
+                                <td> ${nemstock} </td>
+                                <td>
+                                    <a href="#" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        `);
+                        $('#nom').val("");
+                        $('#prix').val("");
+                        $('#stock').val("");
+                        $('#description').val("");
                     },
-                    error:function(err)
+                    error:function(xhr)
                     {
-                        let errors = err.responseJSON;
-                        alert("Erreur lors de l'ajout du produit.");
-
-                    }
-
+                        if (xhr.status === 422) {
+                            $('#Errors').
+                            children().remove();
+                            const errors = xhr.responseJSON.errors;
+                            let errorMessage = '';
+                            for (const key in errors) {
+                                $('#Errors').append("<span class='text-danger'>"+errors[key][0]+"</span>"+"<br />");
+                            }
+                        } else {
+                            alert('Une erreur serveur est survenue.');
+                        }
+                        }
                 })
             });
         });

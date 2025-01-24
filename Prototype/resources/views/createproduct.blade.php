@@ -6,7 +6,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form action="" method="POST">
+            <form action="{{route('produit.store')}}" method="POST">
                 @csrf <!-- Laravel CSRF token -->
                 <div class="form-group">
                     <label for="nom">Nom du Produit :</label>
@@ -29,5 +29,6 @@
                         <x-adminlte-button class="btn-flat" type="submit" label="Ajouter" theme="success" icon="fas fa-lg fa-save"/>
                     </div>
                 </div>
+                <button type="submit">ajouter</button>
             </form>
         </div>

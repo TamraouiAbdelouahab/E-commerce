@@ -28,7 +28,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'stock' => 'required',
+            'content' => 'required',
+        ]);
+        $product = Product::create([
+            'name' => $validatedData['name'],
+            'price' => $validatedData['price'],
+            'stock' => $validatedData['stock'],
+            'content' => $validatedData['content'],
+        ]);
+        return response()->json(['message' => 'Validation réussie !','product' => $product], 200);
     }
 
     /**
@@ -58,8 +70,11 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(string $id)
     {
-        //
+        Product::find($id)->delete();
+        return response()->json([
+            'status'=>'success',
+        ]);
     }
 }
