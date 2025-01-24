@@ -74,7 +74,7 @@ class ProductController extends Controller
     {
         Product::find($id)->delete();
         return response()->json([
-            'status'=>'success',
+            'status'=>'success', 'id' => $id
         ]);
     }
 }

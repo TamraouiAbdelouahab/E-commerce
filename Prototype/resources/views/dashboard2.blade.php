@@ -111,6 +111,7 @@
                 let product_id = $(this).data('id');
                 if(confirm("are you sure??"))
                 {
+                    $(this).parent().parent().remove()
                     $.ajax({
                         url:"{{ route('produit.destroy', '') }}/" + product_id,
                         method:'DELETE',
@@ -120,7 +121,6 @@
                             },
                         success: function(response) {
                             alert('Product deleted successfully');
-                            $('#product-' + product_id).closest('tr').remove();
                         },
                         error: function(xhr, status, error) {
                             alert('An error occurred: ' + error);
@@ -128,7 +128,6 @@
                     }) 
                 }
             })
-
         });
         $(document).ready(function() {
             $(document).on('click', '#add_product', function(e) {
@@ -166,7 +165,7 @@
                                     <a href="#" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="#" class="btn btn-danger btn-sm">
+                                    <a href="#" class="btn btn-danger btn-sm delete_product" data-id="${productId}">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>
