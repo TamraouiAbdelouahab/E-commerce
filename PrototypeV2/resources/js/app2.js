@@ -9,9 +9,9 @@ import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 
 
 import './bootstrap';
-import App from './components/App.vue';
+import App from './components/Dashboard/App.vue';
 import { createApp } from 'vue';
-import router from './router';
+import router from './router/DashboardRoute.js';
 
 
 const app = createApp(App);
