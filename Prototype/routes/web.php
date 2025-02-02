@@ -5,23 +5,31 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $products = Product::all();
-    return view('dashboard2',compact('products'));
-})->name('dashboard.product');
-Route::get('/test', function () {
-    return view('dashboard21');
+Route::get('/', [ProductController::class,'index'])->name('dashboard.product');
+Route::get('/test/{id}', function ($id) {
+     $product = Product::find($id);
+     if (!$product) {
+        return response()->json([
+            'message' => 'Le produit avec cet ID n\'existe pas.'
+        ], 404);
+    }
+    return $product;
 });
-Route::get('/create', function () {
-    return view('createproduct');
-});
+
+// Produit Resources :
+Route::resource('produit',ProductController::class)->only('store' , 'destroy');
+
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::resource('produit',ProductController::class)->only('store' , 'destroy');
+
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

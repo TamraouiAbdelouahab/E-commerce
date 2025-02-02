@@ -4,20 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-
+use App\Repositories\ProductRepository;
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $productRepostitory;
+
+    public function __construct()
+    {
+        $this->productRepostitory = new ProductRepository;
+    }
     public function index()
     {
-        //
+        $products = $this->productRepostitory->getAll();
+        return view('dashboard2',compact('products'));
     }
-
     /**
      * Show the form for creating a new resource.
-     */
+    */
     public function create()
     {
         //
@@ -34,12 +37,7 @@ class ProductController extends Controller
             'stock' => 'required',
             'content' => 'required',
         ]);
-        $product = Product::create([
-            'name' => $validatedData['name'],
-            'price' => $validatedData['price'],
-            'stock' => $validatedData['stock'],
-            'content' => $validatedData['content'],
-        ]);
+        $product = $this->productRepostitory->createProduct($validatedData);
         return response()->json(['message' => 'Validation réussie !','product' => $product], 200);
     }
 
@@ -72,9 +70,6 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        Product::find($id)->delete();
-        return response()->json([
-            'status'=>'success', 'id' => $id
-        ]);
+        return $this->productRepostitory->deleteProduct($id);
     }
 }
