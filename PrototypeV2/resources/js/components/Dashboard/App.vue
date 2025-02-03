@@ -6,6 +6,7 @@ import NavBarLinks from './NavBarLinks.vue';
 import Footer from './Footer.vue';
 
 </script>
+
 <template>
     <navBar v-if="route.name !== 'NotFound'"></navBar>
     <NavBarLinks v-if="route.name !== 'NotFound'"></NavBarLinks>

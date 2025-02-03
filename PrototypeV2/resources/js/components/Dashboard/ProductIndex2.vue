@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 
 
-const products = ref([]);
+const products = ref([]); // Etat ...
 const loading = ref(true);
 const error = ref(null);
 
 
-// les champs de produit
+// les champs de produit....
 const title = ref("");
 const price = ref("");
 const stock = ref("");
@@ -16,7 +16,7 @@ const content = ref("");
 const messageAddProduct = ref(null);
 const errorAddProduct = ref(null);
 
-// ajouter produit ...
+// ajouter produit........//..
 const addProduct = async () => {
     messageAddProduct.value = null;
     errorAddProduct.value = null;
@@ -35,8 +35,7 @@ const addProduct = async () => {
     stock.value = "";
     content.value = "";
     products.value.push(response.data.product);
-    getElements();
-    getPages();
+
 
   } catch (err) {
     // errorAddProduct.value = "Erreur lors de l'ajout du produit.";
@@ -46,29 +45,11 @@ const addProduct = async () => {
   }
 };
 
-// Supprimer produit ...
-const DeleteProduct = async (productId) => {
-    try {
-
-        const response = await axios.delete(`http://127.0.0.1:8000/products/${productId}`);
-        products.value = products.value.filter(product => product.id !== productId);
-        getElements();
-        getPages();
-        console.log(response.data.message);
-
-    } catch (error) {
-        console.error("Erreur lors de la suppression du produit :", err);
-    }
-
-}
-
 
 const fetchProducts = async () => {
   try {
     const response = await axios.get("http://127.0.0.1:8000/products");
     products.value = response.data;
-    getElements();
-    getPages();
   } catch (err) {
     error.value = "Erreur lors du chargement des produits";
     console.error(err);
@@ -77,44 +58,6 @@ const fetchProducts = async () => {
   }
 };
 onMounted(fetchProducts);
-
-
-
-//pagination
-
-    const currentPage = ref(1);
-    const itemsPerPage = 3;
-    const paginatedProducts = ref([]);
-    const totalPages = ref(1);
-    const getElements = () =>{
-        const start = (currentPage.value - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        paginatedProducts.value = products.value.slice(start, end);
-    }
-    const getPages = () =>{
-        totalPages.value = Math.ceil(products.value.length / itemsPerPage)
-    }
-    const nextPage = () => {
-    if (currentPage.value < totalPages.value)
-    {
-        currentPage.value++;
-        getElements();
-    }
-    };
-    const prevPage = () => {
-    if (currentPage.value > 1){
-        currentPage.value--;
-        getElements();
-    }
-    };
-    const ChangecurrentPage= (value)=>
-    {
-        if(value>0 && value <= totalPages.value){
-            currentPage.value = value
-            getElements();
-        }
-    }
-
 
 
 // -------------------//
@@ -199,9 +142,8 @@ onMounted(fetchProducts);
                                             <th style="width: 15%">Actions</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
-                                        <tr v-for="product in paginatedProducts" :key="product.id">
+                                        <tr v-for="product in products" :key="product.id">
                                             <td>{{ product.id }}</td>
                                             <td>{{ product.title }}</td>
                                             <td>{{ product.price }} €</td>
@@ -212,7 +154,7 @@ onMounted(fetchProducts);
                                                 <router-link :to="`/dashboard/produit/${product.id}/edit`" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </router-link>
-                                                <button @click="DeleteProduct(product.id)" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                                <button  class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -220,31 +162,6 @@ onMounted(fetchProducts);
                             </div>
                         </div>
                     </div>
-                </div>
-                <div v-if="totalPages > 1" class="d-flex justify-content-center" style="gap: 10px; padding: 5px;">
-                    <button @click="prevPage" :disabled="currentPage === 1" style="border: none;padding:0">
-                        <i class="fas fa-angle-double-left"></i>
-                    </button>
-                    <div v-if="totalPages < 4" class="d-flex justify-content-center" style="gap:10px;" >
-                        <button v-for="n in totalPages" :key="n" @click="ChangecurrentPage(n)"
-                        :class="'btn btn-outline-primary ' + (n === currentPage ? 'active' : '')" >{{ n }}</button>
-                    </div>
-                    <div v-else class="d-flex justify-content-center" style="gap:10px;">
-                        <button  @click="ChangecurrentPage(1)"
-                        :class="'btn btn-outline-primary ' + (currentPage === 1 ? 'active' : '')" >{{ 1 }}</button>
-                        <button v-if="!([1, totalPages,2].includes(currentPage))"
-                        class="btn btn-outline-primary " >...</button>
-                        <button v-if="!([1, totalPages].includes(currentPage))"
-                        class="btn btn-outline-primary active" >{{ currentPage }}</button>
-                        <button v-if="!([totalPages-1].includes(currentPage))"
-                        class="btn btn-outline-primary " >...</button>
-                        <button  @click="ChangecurrentPage(totalPages)"
-                        :class="'btn btn-outline-primary ' + (currentPage === totalPages ? 'active' : '')" >{{ totalPages }}</button>
-                    </div>
-                    <!-- <span @click="ChangecurrentPage(2)"> Page {{ currentPage }} / {{ totalPages }} </span> -->
-                    <button @click="nextPage" :disabled="currentPage === totalPages" style="border: none;padding:0">
-                        <i class="fas fa-angle-double-right"></i>
-                    </button>
                 </div>
             </div>
         </section>

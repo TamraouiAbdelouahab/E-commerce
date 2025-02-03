@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Importe tes composants Vue
 import Dashboard from '../components/Dashboard/Content.vue';
-import ProductIndex from '../components/Dashboard/ProductIndex.vue';
+import ProductIndex from '../components/Dashboard/ProductIndex2.vue';
 import ProductEdit from '../components/Dashboard/editProduct.vue';
 import NotFound from '../components/404/404.vue';
 
@@ -12,7 +12,6 @@ const routes = [
     { path: '/dashboard/produit/:id/edit', component: ProductEdit },
     { path: '/dashboard/:pathMatch(.*)*',name: 'NotFound', component: NotFound }
 ];
-
 const router = createRouter({
     history: createWebHistory(),
     routes,
